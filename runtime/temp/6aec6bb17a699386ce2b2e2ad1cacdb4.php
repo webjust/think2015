@@ -274,7 +274,7 @@
                                 if(empty($sql_result_v))
                                 {                            
                                     $result_name = $sql_result_v = \think\Db::query("select * from `__PREFIX__article_cat` where parent_id = 2"); 
-                                    S("sql_".$md5_key,$sql_result_v,86400);
+                                    S("sql_".$md5_key,$sql_result_v,1);
                                 }    
                               foreach($sql_result_v as $k=>$v): ?>
                 <ul>
@@ -288,7 +288,7 @@
                                 if(empty($sql_result_v2))
                                 {                            
                                     $result_name = $sql_result_v2 = \think\Db::query("select * from `__PREFIX__article` where cat_id = $v[cat_id]  and is_open=1"); 
-                                    S("sql_".$md5_key,$sql_result_v2,86400);
+                                    S("sql_".$md5_key,$sql_result_v2,1);
                                 }    
                               foreach($sql_result_v2 as $k2=>$v2): ?>
                         <li>
@@ -318,7 +318,7 @@
                                 if(empty($sql_result_v))
                                 {                            
                                     $result_name = $sql_result_v = \think\Db::query("select * from `__PREFIX__article` where cat_id = 5 and is_open=1"); 
-                                    S("sql_".$md5_key,$sql_result_v,86400);
+                                    S("sql_".$md5_key,$sql_result_v,1);
                                 }    
                               foreach($sql_result_v as $k=>$v): ?>
                 <a href="<?php echo U('Home/Article/detail',array('article_id'=>$v[article_id])); ?>"><?php echo $v[title]; ?></a>

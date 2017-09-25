@@ -23,24 +23,31 @@ use think\Verify;
 use think\Db;
 
 class Article extends Base {
-    
+
+    /**
+     * @url http://tpshop.dev/home/article/index/article_id/1
+     */
     public function index(){       
         $article_id = I('article_id/d',38);
     	$article = D('article')->where("article_id", $article_id)->find();
+    	dump($article);
     	$this->assign('article',$article);
-        return $this->fetch();
+        //return $this->fetch();
     }
  
     /**
      * 文章内列表页
+     * @url http://tpshop.dev/home/article/articlelist.html
      */
     public function articleList(){
         $article_cat = M('ArticleCat')->where("parent_id  = 0")->select();
         $this->assign('article_cat',$article_cat);
-        return $this->fetch();
+        dump($article_cat);
+        //return $this->fetch();
     }    
     /**
      * 文章内容页
+     * @url http://tpshop.dev/home/article/detail/article_id/12.html
      */
     public function detail(){
     	$article_id = I('article_id/d',1);

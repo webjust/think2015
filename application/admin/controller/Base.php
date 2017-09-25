@@ -51,7 +51,8 @@ class Base extends Controller {
         	if(session('admin_id') > 0 ){
         		$this->check_priv();//检查管理员菜单操作权限
         	}else{
-        		$this->error('请先登陆',U('Admin/Admin/login'),1);
+//        		$this->error('请先登陆',U('Admin/Admin/login'),1);
+                $this->redirect(U('Admin/Admin/login'));
         	}
         }
         $this->public_assign();

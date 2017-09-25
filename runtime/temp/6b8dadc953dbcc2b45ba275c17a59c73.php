@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:3:{s:36:"./template/pc/rainbow/cart\cart.html";i:1499420874;s:45:"./template/pc/rainbow/public\sign-header.html";i:1499420874;s:46:"./template/pc/rainbow/public\footer_index.html";i:1499420874;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:3:{s:36:"./template/pc/rainbow/cart\cart.html";i:1505962713;s:45:"./template/pc/rainbow/public\sign-header.html";i:1499420874;s:46:"./template/pc/rainbow/public\footer_index.html";i:1499420874;}*/ ?>
 <!DOCTYPE html>
 <html id="ng-app">
 <head lang="zh">
@@ -158,7 +158,7 @@
                                 if(empty($sql_result_v))
                                 {                            
                                     $result_name = $sql_result_v = \think\Db::query("select * from `__PREFIX__goods` where  is_recommend = 1 limit 10"); 
-                                    S("sql_".$md5_key,$sql_result_v,86400);
+                                    S("sql_".$md5_key,$sql_result_v,1);
                                 }    
                               foreach($sql_result_v as $k=>$v): ?>
                                     <li ng-repeat="item in list" class="ng-scope">
@@ -221,7 +221,7 @@
                                 if(empty($sql_result_v))
                                 {                            
                                     $result_name = $sql_result_v = \think\Db::query("select * from `__PREFIX__article_cat` where parent_id = 2"); 
-                                    S("sql_".$md5_key,$sql_result_v,86400);
+                                    S("sql_".$md5_key,$sql_result_v,1);
                                 }    
                               foreach($sql_result_v as $k=>$v): ?>
                 <ul>
@@ -235,7 +235,7 @@
                                 if(empty($sql_result_v2))
                                 {                            
                                     $result_name = $sql_result_v2 = \think\Db::query("select * from `__PREFIX__article` where cat_id = $v[cat_id]  and is_open=1"); 
-                                    S("sql_".$md5_key,$sql_result_v2,86400);
+                                    S("sql_".$md5_key,$sql_result_v2,1);
                                 }    
                               foreach($sql_result_v2 as $k2=>$v2): ?>
                         <li>
@@ -265,7 +265,7 @@
                                 if(empty($sql_result_v))
                                 {                            
                                     $result_name = $sql_result_v = \think\Db::query("select * from `__PREFIX__article` where cat_id = 5 and is_open=1"); 
-                                    S("sql_".$md5_key,$sql_result_v,86400);
+                                    S("sql_".$md5_key,$sql_result_v,1);
                                 }    
                               foreach($sql_result_v as $k=>$v): ?>
                 <a href="<?php echo U('Home/Article/detail',array('article_id'=>$v[article_id])); ?>"><?php echo $v[title]; ?></a>
@@ -300,7 +300,6 @@
             if(before_request == 0) // 上一次请求没回来 不进行下一次请求
                 return false;
             before_request = 0;
-
 
             $.ajax({
                 type : "POST",
@@ -385,6 +384,7 @@
                 var id = s_name.replace('cart_select[','').replace(']','');
                 chk_value.push(id);
             });
+
             // ajax  调用删除
             if(chk_value.length > 0)
                 ajax_del_cart(chk_value.join(','));

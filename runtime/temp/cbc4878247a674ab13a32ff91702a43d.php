@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:38:"./template/pc/rainbow/index\index.html";i:1499420874;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:38:"./template/pc/rainbow/index\index.html";i:1505415196;}*/ ?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -235,7 +235,7 @@
                                             <!--商品分类底部广告-s-->
                                             <div class="advertisement_down">
                                                 <ul>                                                
-                                                    <?php $pid =14;$ad_position = M("ad_position")->cache(true,TPSHOP_CACHE_TIME)->column("position_id,position_name,ad_width,ad_height","position_id");$result = M("ad")->where("pid=$pid  and enabled = 1 and start_time < 1502679600 and end_time > 1502679600 ")->order("orderby desc")->cache(true,TPSHOP_CACHE_TIME)->limit("1")->select();
+                                                    <?php $pid =14;$ad_position = M("ad_position")->cache(true,TPSHOP_CACHE_TIME)->column("position_id,position_name,ad_width,ad_height","position_id");$result = M("ad")->where("pid=$pid  and enabled = 1 and start_time < 1505671200 and end_time > 1505671200 ")->order("orderby desc")->cache(true,TPSHOP_CACHE_TIME)->limit("1")->select();
 if(!in_array($pid,array_keys($ad_position)) && $pid)
 {
   M("ad_position")->insert(array(
@@ -287,7 +287,7 @@ foreach($result as $key=>$v3):
                                     </div>
                                     <!--商品分类右侧广告-s-->
                                     <div class="cata-nav-rigth">
-                                        <?php $pid =51;$ad_position = M("ad_position")->cache(true,TPSHOP_CACHE_TIME)->column("position_id,position_name,ad_width,ad_height","position_id");$result = M("ad")->where("pid=$pid  and enabled = 1 and start_time < 1502679600 and end_time > 1502679600 ")->order("orderby desc")->cache(true,TPSHOP_CACHE_TIME)->limit("1")->select();
+                                        <?php $pid =51;$ad_position = M("ad_position")->cache(true,TPSHOP_CACHE_TIME)->column("position_id,position_name,ad_width,ad_height","position_id");$result = M("ad")->where("pid=$pid  and enabled = 1 and start_time < 1505671200 and end_time > 1505671200 ")->order("orderby desc")->cache(true,TPSHOP_CACHE_TIME)->limit("1")->select();
 if(!in_array($pid,array_keys($ad_position)) && $pid)
 {
   M("ad_position")->insert(array(
@@ -352,7 +352,7 @@ foreach($result as $key=>$v):
                                 if(empty($sql_result_v))
                                 {                            
                                     $result_name = $sql_result_v = \think\Db::query("SELECT * FROM `__PREFIX__navigation` where is_show = 1 ORDER BY `sort` DESC"); 
-                                    S("sql_".$md5_key,$sql_result_v,86400);
+                                    S("sql_".$md5_key,$sql_result_v,1);
                                 }    
                               foreach($sql_result_v as $k=>$v): ?>
                             <li class="page"><a href="<?php echo $v[url]; ?>" <?php if($v[is_new] == 1): ?>target="_blank" <?php endif; ?><span><?php echo $v[name]; ?></span></a></li>
@@ -374,7 +374,7 @@ foreach($result as $key=>$v):
 
         </ol>
         <div class="carousel-inner">
-        	<?php $adk = '1'; $pid =2;$ad_position = M("ad_position")->cache(true,TPSHOP_CACHE_TIME)->column("position_id,position_name,ad_width,ad_height","position_id");$result = M("ad")->where("pid=$pid  and enabled = 1 and start_time < 1502679600 and end_time > 1502679600 ")->order("orderby desc")->cache(true,TPSHOP_CACHE_TIME)->limit("5")->select();
+        	<?php $adk = '1'; $pid =2;$ad_position = M("ad_position")->cache(true,TPSHOP_CACHE_TIME)->column("position_id,position_name,ad_width,ad_height","position_id");$result = M("ad")->where("pid=$pid  and enabled = 1 and start_time < 1505671200 and end_time > 1505671200 ")->order("orderby desc")->cache(true,TPSHOP_CACHE_TIME)->limit("5")->select();
 if(!in_array($pid,array_keys($ad_position)) && $pid)
 {
   M("ad_position")->insert(array(
@@ -426,7 +426,7 @@ foreach($result as $key=>$v1):
         <div class="adcertiserment_head">
             <div class="w1224">
                 <ul>
-                    <?php $pid =52;$ad_position = M("ad_position")->cache(true,TPSHOP_CACHE_TIME)->column("position_id,position_name,ad_width,ad_height","position_id");$result = M("ad")->where("pid=$pid  and enabled = 1 and start_time < 1502679600 and end_time > 1502679600 ")->order("orderby desc")->cache(true,TPSHOP_CACHE_TIME)->limit("2")->select();
+                    <?php $pid =52;$ad_position = M("ad_position")->cache(true,TPSHOP_CACHE_TIME)->column("position_id,position_name,ad_width,ad_height","position_id");$result = M("ad")->where("pid=$pid  and enabled = 1 and start_time < 1505671200 and end_time > 1505671200 ")->order("orderby desc")->cache(true,TPSHOP_CACHE_TIME)->limit("2")->select();
 if(!in_array($pid,array_keys($ad_position)) && $pid)
 {
   M("ad_position")->insert(array(
@@ -481,7 +481,7 @@ foreach($result as $key=>$v):
     <div class="adv3 p">
         <div class="w1224">
             <ul>
-                <?php $pid =53;$ad_position = M("ad_position")->cache(true,TPSHOP_CACHE_TIME)->column("position_id,position_name,ad_width,ad_height","position_id");$result = M("ad")->where("pid=$pid  and enabled = 1 and start_time < 1502679600 and end_time > 1502679600 ")->order("orderby desc")->cache(true,TPSHOP_CACHE_TIME)->limit("3")->select();
+                <?php $pid =53;$ad_position = M("ad_position")->cache(true,TPSHOP_CACHE_TIME)->column("position_id,position_name,ad_width,ad_height","position_id");$result = M("ad")->where("pid=$pid  and enabled = 1 and start_time < 1505671200 and end_time > 1505671200 ")->order("orderby desc")->cache(true,TPSHOP_CACHE_TIME)->limit("3")->select();
 if(!in_array($pid,array_keys($ad_position)) && $pid)
 {
   M("ad_position")->insert(array(
@@ -532,7 +532,7 @@ foreach($result as $key=>$v):
     <!--轮播图底部广告-e-->
     <div class="adver_line">
         <div class="w1224">
-            <?php $pid =3;$ad_position = M("ad_position")->cache(true,TPSHOP_CACHE_TIME)->column("position_id,position_name,ad_width,ad_height","position_id");$result = M("ad")->where("pid=$pid  and enabled = 1 and start_time < 1502679600 and end_time > 1502679600 ")->order("orderby desc")->cache(true,TPSHOP_CACHE_TIME)->limit("1")->select();
+            <?php $pid =3;$ad_position = M("ad_position")->cache(true,TPSHOP_CACHE_TIME)->column("position_id,position_name,ad_width,ad_height","position_id");$result = M("ad")->where("pid=$pid  and enabled = 1 and start_time < 1505671200 and end_time > 1505671200 ")->order("orderby desc")->cache(true,TPSHOP_CACHE_TIME)->limit("1")->select();
 if(!in_array($pid,array_keys($ad_position)) && $pid)
 {
   M("ad_position")->insert(array(
@@ -597,7 +597,7 @@ foreach($result as $key=>$v):
             </div>
             <div class="main_layer p">
                 <div class="hoste_le">  
-					<?php $adk_arr = $v['id']+10; $pid =$adk_arr;$ad_position = M("ad_position")->cache(true,TPSHOP_CACHE_TIME)->column("position_id,position_name,ad_width,ad_height","position_id");$result = M("ad")->where("pid=$pid  and enabled = 1 and start_time < 1502679600 and end_time > 1502679600 ")->order("orderby desc")->cache(true,TPSHOP_CACHE_TIME)->limit("1")->select();
+					<?php $adk_arr = $v['id']+10; $pid =$adk_arr;$ad_position = M("ad_position")->cache(true,TPSHOP_CACHE_TIME)->column("position_id,position_name,ad_width,ad_height","position_id");$result = M("ad")->where("pid=$pid  and enabled = 1 and start_time < 1505671200 and end_time > 1505671200 ")->order("orderby desc")->cache(true,TPSHOP_CACHE_TIME)->limit("1")->select();
 if(!in_array($pid,array_keys($ad_position)) && $pid)
 {
   M("ad_position")->insert(array(
@@ -715,7 +715,7 @@ foreach($result as $key=>$v2):
                                 if(empty($sql_result_v))
                                 {                            
                                     $result_name = $sql_result_v = \think\Db::query("select * from `__PREFIX__article_cat` where parent_id = 2"); 
-                                    S("sql_".$md5_key,$sql_result_v,86400);
+                                    S("sql_".$md5_key,$sql_result_v,1);
                                 }    
                               foreach($sql_result_v as $k=>$v): ?>
                         <dl class="foot-con">
@@ -727,7 +727,7 @@ foreach($result as $key=>$v2):
                                 if(empty($sql_result_v2))
                                 {                            
                                     $result_name = $sql_result_v2 = \think\Db::query("select * from `__PREFIX__article` where cat_id = $v[cat_id]  and is_open=1"); 
-                                    S("sql_".$md5_key,$sql_result_v2,86400);
+                                    S("sql_".$md5_key,$sql_result_v2,1);
                                 }    
                               foreach($sql_result_v2 as $k2=>$v2): ?>
                             <dd>

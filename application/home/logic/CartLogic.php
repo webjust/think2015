@@ -29,8 +29,8 @@ use think\Db;
 class CartLogic extends Model
 {
     protected $goods;//商品模型
-    protected $session_id;//session_id
-    protected $user_id = 0;//user_id
+    protected $session_id;  //session_id
+    protected $user_id = 0; //user_id
 
     public function __construct()
     {
@@ -45,6 +45,7 @@ class CartLogic extends Model
     public function setUniqueId($uniqueId){
         $this->session_id = $uniqueId;
     }
+
     /**
      * 包含一个商品模型
      * @param $goods_id
@@ -72,17 +73,23 @@ class CartLogic extends Model
      */
     public function addGoodsToCart($goods_num, $goods_spec_key)
     {
+        // 判断商品是否存在（避免传入的是非法ID）
         if(empty($this->goods)){
             return ['status'=>'-3','msg'=>'购买商品不存在','result'=>''];
         }
+
+        // 不是普通的订单 且 用户未登录
         if ($this->goods['prom_type'] > 0 && $this->user_id == 0) {
             return array('status' => -101, 'msg' => '购买活动商品必须先登录', 'result' => '');
         }
+
+        // 判断购物车数量
         $userCartCount = Db::name('cart')->where(['user_id'=>$this->user_id,'session_id'=>$this->session_id])->count();//获取用户购物车的商品有多少种
         if ($userCartCount >= 20) {
             return array('status' => -9, 'msg' => '购物车最多只能放20种商品', 'result' => '');
         }
 
+        // 判断1：限时抢购 2：团购 3：促销优惠 4：预售 0: 普通产品
         if($this->goods['prom_type'] == 1){
             $result = $this->addFlashSaleCart($goods_num, $goods_spec_key);
         }elseif($this->goods['prom_type'] == 2){
@@ -92,11 +99,11 @@ class CartLogic extends Model
         }else{
             $result = $this->addNormalCart($goods_num, $goods_spec_key);
         }
+
         $result['result'] = $UserCartGoodsNum = $this->getUserCartGoodsNum(); // 查找购物车数量
         setcookie('cn', $UserCartGoodsNum, null, '/');
         return $result;
     }
-
 
     /**
      * 购物车添加普通商品
@@ -107,16 +114,22 @@ class CartLogic extends Model
     private function addNormalCart($goods_num,$goods_spec_key){
         $CartModel = new Cart();
         $goodsLogic = new GoodsLogic();
-        // 获取商品对应的规格价钱 库存 条码
+
+        // 获取商品对应的规格 价钱 库存 条码
         $specGoodsPriceList = M('SpecGoodsPrice')->where("goods_id", $this->goods['goods_id'])->cache(true, TPSHOP_CACHE_TIME)->getField("key,key_name,price,store_count,sku");
+
+        // 假设是有规格的商品，必须传入规格
         if(!empty($specGoodsPriceList)){
             if(empty($goods_spec_key)){
                 return array('status' => -1, 'msg' => '必须传递商品规格', 'result' => '');
             }
+            // 获取指定规格产品的价格
             $specPrice = $specGoodsPriceList[$goods_spec_key]['price']; // 获取规格指定的价格
         }
+
         // 查询购物车是否已经存在这商品
         $userCartGoods = $CartModel::get(['user_id'=>$this->user_id,'session_id'=>$this->session_id,'goods_id'=>$this->goods['goods_id'],'spec_key'=>$goods_spec_key]);
+
         // 如果该商品已经存在购物车
         if ($userCartGoods) {
             $userWantGoodsNum = $goods_num + $userCartGoods['goods_num'];//本次要购买的数量加上购物车的本身存在的数量
@@ -131,6 +144,7 @@ class CartLogic extends Model
                 //没有阶梯价格，如果有规格价格，就使用规格价格，否则使用本店价。
                 $price = isset($specPrice) ? $specPrice : $this->goods['shop_price'];
             }
+            // 更新数量
             $cartResult = $CartModel->save(['goods_num' => $userWantGoodsNum,'goods_price'=>$price,'member_goods_price'=>$price], ['id' => $userCartGoods['id']]);
         }else{
             //如果有阶梯价格
@@ -141,6 +155,7 @@ class CartLogic extends Model
                 //没有阶梯价格，如果有规格价格，就使用规格价格，否则使用本店价。
                 $price = isset($specPrice) ? $specPrice : $this->goods['shop_price'];
             }
+            // 准备数据
             $cartAddData = array(
                 'user_id' => $this->user_id,   // 用户id
                 'session_id' => $this->session_id,   // sessionid
@@ -155,10 +170,12 @@ class CartLogic extends Model
                 'prom_type' => 0,   // 0 普通订单,1 限时抢购, 2 团购 , 3 促销优惠
                 'prom_id' => 0,   // 活动id
             );
+
             if($goods_spec_key){
                 $cartAddData['spec_key'] = $goods_spec_key;
                 $cartAddData['spec_key_name'] = $specGoodsPriceList[$goods_spec_key]['key_name']; // 规格 key_name
             }
+            // 添加到购物车
             $cartResult = Db::name('Cart')->insert($cartAddData);
         }
         if($cartResult !== false){
@@ -175,6 +192,7 @@ class CartLogic extends Model
      */
     private function addFlashSaleCart($goods_num,$goods_spec_key){
         $CartModel = new Cart();
+        // 检查活动是否已经结束
         $flashSaleLogic = new FlashSaleLogic($this->goods['prom_id']);
         $flashSale = $flashSaleLogic->getPromModel();
         $flashSaleIsEnd = $flashSaleLogic->checkFlashSaleIsEnd();
@@ -188,6 +206,7 @@ class CartLogic extends Model
         }
         //获取用户购物车的抢购商品
         $userCartGoods = $CartModel::get(['user_id'=>$this->user_id,'session_id'=>$this->session_id,'goods_id'=>$this->goods['goods_id']]);
+
         $userCartGoodsNum = empty($userCartGoods) ? 0 : $userCartGoods['goods_num'];///获取用户购物车的抢购商品数量
         $userFlashOrderGoodsNum = $flashSaleLogic->getUserFlashOrderGoodsNum($this->user_id); //获取用户抢购已购商品数量
         $flashSalePurchase = $flashSale['goods_num'] - $flashSale['buy_num'];//抢购剩余库存
@@ -196,6 +215,7 @@ class CartLogic extends Model
             return array('status' => -4, 'msg' => '每人限购'.$flashSale['buy_limit'].'件，您已下单'.$userFlashOrderGoodsNum.'件'.'购物车已有'.$userCartGoodsNum.'件', 'result' => '');
         }
         $userWantGoodsNum = $goods_num + $userCartGoodsNum;//本次要购买的数量加上购物车的本身存在的数量
+
         if($userWantGoodsNum > $flashSalePurchase){
             return array('status' => -4, 'msg' => '商品库存不足，剩余'.$flashSalePurchase.',当前购物车已有'.$userCartGoodsNum.'件', 'result' => '');
         }
@@ -357,6 +377,7 @@ class CartLogic extends Model
             $user['user_id'] = 0;
         }
         $cartList = DB::name('Cart')->where($cartWhere)->select();  // 获取购物车商品
+        //dump($cartList);
         $total_goods_num = $total_price = $cut_fee = 0;//初始化数据。商品总共数量/商品总额/节约金额
         foreach ($cartList as $k => $val) {
             $cartList[$k]['goods_fee'] = $val['goods_num'] * $val['member_goods_price'];

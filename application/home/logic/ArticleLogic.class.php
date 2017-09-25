@@ -26,7 +26,6 @@ use think\Model\RelationModel;
 
 class ArticleLogic extends RelationModel
 {
-
 	public function getSiteArticle(){
 		$syscate =  M('ArticleCat')->where("cat_type  = 1")->select();
 		foreach($syscate as $v){

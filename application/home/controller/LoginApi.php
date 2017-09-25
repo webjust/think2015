@@ -26,6 +26,7 @@ class LoginApi extends Base {
 //        unset($_REQUEST['oauth']);// 删除掉 以免被进入签名
         
         $this->oauth = I('get.oauth');
+
         //获取配置
         $data = M('Plugin')->where("code",$this->oauth)->where("type","login")->find();
         $this->config = unserialize($data['config_value']); // 配置反序列化

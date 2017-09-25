@@ -626,7 +626,7 @@ background: #293038; display: block; width: 100%; height: 2px; position: absolut
 .fold .admincp-container-right { background-color: #FFF; position: absolute; z-index: 1; top: 2px; right: 0; bottom: 0; left: 40px; }
 .flexigrid { margin-top: 10px; position: relative; z-index: 1; overflow: hidden; }
 /*f表格标题块*/
-.flexigrid .mDiv { background-color: #FFF; color: #333; white-space: nowrap; display: block; border-bottom: solid 1px #C8C8C8; position: relative; z-index: 4; height: 30px; }
+.flexigrid .mDiv { background-color: #FFF; color: #333; white-space: nowrap; display: block; border-bottom: solid 1px #C8C8C8; position: relative; z-index: 4; height: 60px; }
 /*标题*/
 .flexigrid .mDiv .ftitle { font-size: 0; *word-spacing:-1px/*IE6、7*/;
 height: 24px; float: left; }

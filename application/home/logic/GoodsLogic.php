@@ -149,7 +149,7 @@ class GoodsLogic extends Model
     /**
      * 获取某个商品的评论统计
      * c0:全部评论数  c1:好评数 c2:中评数  c3差评数
-     * rate1:好评率 rate2:中评率  c3差评率
+     * rate1:好评率 rate2:中评率  rate3差评率
      * @param $goods_id
      * @return array
      */

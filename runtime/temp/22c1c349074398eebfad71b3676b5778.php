@@ -277,7 +277,7 @@
                                 if(empty($sql_result_item))
                                 {                            
                                     $order_list = $sql_result_item = \think\Db::query("select * from `__PREFIX__order` where user_id = $user[user_id] order by order_id desc limit 1"); 
-                                    S("sql_".$md5_key,$sql_result_item,86400);
+                                    S("sql_".$md5_key,$sql_result_item,1);
                                 }    
                               foreach($sql_result_item as $key=>$item): endforeach; if(empty($order_list) || (($order_list instanceof \think\Collection || $order_list instanceof \think\Paginator ) && $order_list->isEmpty())): ?>
 									<div class="car-none-pl">
@@ -316,7 +316,7 @@
                                 if(empty($sql_result_goods))
                                 {                            
                                     $goods_list = $sql_result_goods = \think\Db::query("select * from `__PREFIX__order_goods` where order_id = $list[order_id]"); 
-                                    S("sql_".$md5_key,$sql_result_goods,86400);
+                                    S("sql_".$md5_key,$sql_result_goods,1);
                                 }    
                               foreach($sql_result_goods as $key=>$goods): ?>
 												<tr class="conten_or">
@@ -388,7 +388,7 @@
                                 if(empty($sql_result_item))
                                 {                            
                                     $collect_result = $sql_result_item = \think\Db::query("select c.*,g.shop_price from __PREFIX__goods_collect c INNER JOIN __PREFIX__goods g on c.goods_id = g.goods_id  where c.user_id = $user[user_id] order by collect_id desc limit 3"); 
-                                    S("sql_".$md5_key,$sql_result_item,86400);
+                                    S("sql_".$md5_key,$sql_result_item,1);
                                 }    
                               foreach($sql_result_item as $key=>$item): endforeach; ?>
 										<div class="ddlb-tit">
@@ -424,7 +424,7 @@
                                 if(empty($sql_result_v))
                                 {                            
                                     $result_name = $sql_result_v = \think\Db::query("select l.*,c.condition,c.money from __PREFIX__coupon_list l INNER JOIN __PREFIX__coupon c on c.id = l.cid where l.uid = $user[user_id] and  l.use_time = 0 and c.use_end_time > $template_now_time  order by l.id desc limit 2"); 
-                                    S("sql_".$md5_key,$sql_result_v,86400);
+                                    S("sql_".$md5_key,$sql_result_v,1);
                                 }    
                               foreach($sql_result_v as $key=>$v): ?>
                                                     <div class="coupon-bgimg">
@@ -488,7 +488,7 @@
                                 if(empty($sql_result_v))
                                 {                            
                                     $result_name = $sql_result_v = \think\Db::query("select * from `__PREFIX__article_cat` where parent_id = 2"); 
-                                    S("sql_".$md5_key,$sql_result_v,86400);
+                                    S("sql_".$md5_key,$sql_result_v,1);
                                 }    
                               foreach($sql_result_v as $k=>$v): ?>
                 <ul>
@@ -502,7 +502,7 @@
                                 if(empty($sql_result_v2))
                                 {                            
                                     $result_name = $sql_result_v2 = \think\Db::query("select * from `__PREFIX__article` where cat_id = $v[cat_id]  and is_open=1"); 
-                                    S("sql_".$md5_key,$sql_result_v2,86400);
+                                    S("sql_".$md5_key,$sql_result_v2,1);
                                 }    
                               foreach($sql_result_v2 as $k2=>$v2): ?>
                         <li>
@@ -532,7 +532,7 @@
                                 if(empty($sql_result_v))
                                 {                            
                                     $result_name = $sql_result_v = \think\Db::query("select * from `__PREFIX__article` where cat_id = 5 and is_open=1"); 
-                                    S("sql_".$md5_key,$sql_result_v,86400);
+                                    S("sql_".$md5_key,$sql_result_v,1);
                                 }    
                               foreach($sql_result_v as $k=>$v): ?>
                 <a href="<?php echo U('Home/Article/detail',array('article_id'=>$v[article_id])); ?>"><?php echo $v[title]; ?></a>

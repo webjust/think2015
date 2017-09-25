@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:44:"./template/pc/rainbow/cart\ajax_address.html";i:1499420874;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:44:"./template/pc/rainbow/cart\ajax_address.html";i:1505981600;}*/ ?>
 <?php if(is_array($address_list) || $address_list instanceof \think\Collection || $address_list instanceof \think\Paginator): if( count($address_list)==0 ) : echo "" ;else: foreach($address_list as $k=>$v): if($v[is_default] == 1): ?> <!--默认选中的地址-->
         <div class="order-address-list address_current">
             <table width="100%" cellspacing="0" cellpadding="0" border="1" class="address">

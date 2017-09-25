@@ -54,6 +54,7 @@ class Pickup extends model
             ->find();
         return $pickup_list;
     }
+
     /**
      * 根据省市区获取多个自提点
      * @param $province_id

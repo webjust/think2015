@@ -1,28 +1,28 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:46:"./template/pc/rainbow/cart\ajax_cart_list.html";i:1499420874;}*/ ?>
- <?php if(empty($cartList)): ?>         
+<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:46:"./template/pc/rainbow/cart\ajax_cart_list.html";i:1505930501;}*/ ?>
+ <?php if(empty($cartList)): ?>
      <p style="text-align:center"><a href="/"><img src="__STATIC__/images/null_cart2.jpg"  /></a></p>
      <script>
 	    $(".sc-acti-list,.sc-pro-list").hide();
      </script>
- <?php endif; ?> 
+ <?php endif; ?>
 
 <div class="sc-pro-list">
   <table width="100%" border="0" cellspacing="0" cellpadding="1">
       <tr class="ba-co-danhui">
         <th class="pa-le-9" align="center" valign="middle">&nbsp;&nbsp;</th>
         <th align="center" valign="middle" colspan="2">商品</th>
-        <th align="center" valign="middle">市场价（元）</th>                        
+        <th align="center" valign="middle">市场价（元）</th>
         <th align="center" valign="middle">单价（元）</th>
         <?php if(($user[discount] != 1) and ($user[discount] != null)): ?>
-	        <th align="center" valign="middle">会员折扣价</th>        
+	        <th align="center" valign="middle">会员折扣价</th>
         <?php endif; ?>
         <th align="center" valign="middle">数量</th>
         <th align="center" valign="middle">小计（元）</th>
         <th align="center" valign="middle">操作</th>
-      </tr>            
+      </tr>
      <?php if(is_array($cartList) || $cartList instanceof \think\Collection || $cartList instanceof \think\Paginator): if( count($cartList)==0 ) : echo "" ;else: foreach($cartList as $k=>$v): ?>
       <tr>
-        <td class="pa-le-9" style="border-right:0" align="center" valign="middle">    
+        <td class="pa-le-9" style="border-right:0" align="center" valign="middle">
             <input type="checkbox"  name="cart_select[<?php echo $v['id']; ?>]" <?php if($v[selected] == 1): ?>checked="checked"<?php endif; ?> value="1" onclick="ajax_cart_list();" />
         </td>
         <td style="border-left:0px;;border-right:0px" class="pa-to-20 pa-bo-20 bo-ri-0" width="80px" align="center" valign="top" valign="middle">
@@ -32,30 +32,30 @@
         </td>
         <td style="border-left:0px; border-right:0px"  class="pa-to-20 wi516"align="left"  valign="top" valign="middle">
             <p class="gwc-ys-pp">
-            	<a href="<?php echo U('Home/Goods/goodsInfo',array('id'=>$v[goods_id])); ?>" style="vertical-align:middle"><?php echo $v['goods_name']; ?></a>                
+            	<a href="<?php echo U('Home/Goods/goodsInfo',array('id'=>$v[goods_id])); ?>" style="vertical-align:middle"><?php echo $v['goods_name']; ?></a>
                 <!--团购--><?php if($v[activity_type] == 2): ?><img  width="80" height="60" src="/public/images/groupby2.jpg" style="vertical-align:middle"><?php endif; ?>
                 <!--抢购--><?php if($v[activity_type] == 1): ?><img  width="40" height="40" src="/public/images/qianggou2.jpg" style="vertical-align:middle"><?php endif; ?>
             </p>
             <p class="ggwc-ys-hs"><?php echo $v['spec_key_name']; ?></p>
         </td>
-        <td style="border-left:0px" align="center" valign="middle"><span>￥<?php echo $v['market_price']; ?></span></td>                        
+        <td style="border-left:0px" align="center" valign="middle"><span>￥<?php echo $v['market_price']; ?></span></td>
         <td style="border-left:0px" align="center" valign="middle"><span>￥<?php echo $v['goods_price']; ?></span></td>
         <?php if(($user[discount] != 1) and ($user[discount] != null)): ?>
-        <td style="border-left:0px" align="center" valign="middle"><span>￥<?php echo $v['member_goods_price']; ?></span></td>        
-        <?php endif; ?>        
+        <td style="border-left:0px" align="center" valign="middle"><span>￥<?php echo $v['member_goods_price']; ?></span></td>
+        <?php endif; ?>
         <td align="center" valign="middle">
             <div class="sc-stock-area">
-                <div class="stock-area">                            
+                <div class="stock-area">
                     <a onClick="switch_num(-1,<?php echo $v['id']; ?>,<?php echo $v['store_count']; ?>);" title="减">-</a>
                     <input class="wi43 fl" type="text" value="<?php echo $v['goods_num']; ?>" name="goods_num[<?php echo $v['id']; ?>]" id="goods_num[<?php echo $v['id']; ?>]" readonly="" />
-                    <a onClick="switch_num(1,<?php echo $v['id']; ?>,<?php echo $v['store_count']; ?>);" title="加">+</a>                            
+                    <a onClick="switch_num(1,<?php echo $v['id']; ?>,<?php echo $v['store_count']; ?>);" title="加">+</a>
                 </div>
             </div>
         </td>
         <td align="center" valign="middle">￥<?php echo $v['goods_fee']; ?></td>
         <td align="center" valign="middle"><a  class="gwc-gb" href="javascript:void(0);" onclick="ajax_del_cart(<?php echo $v['id']; ?>);"></a></td>
       </tr>
-    <?php endforeach; endif; else: echo "" ;endif; ?>      
+    <?php endforeach; endif; else: echo "" ;endif; ?>
     </table>
 </div>
 <div class="sc-total-list ma-to-20 sc-pro-list">

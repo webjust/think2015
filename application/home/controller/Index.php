@@ -23,7 +23,6 @@ use think\Db;
 class Index extends Base {
     
     public function index(){      
-
         // 如果是手机跳转到 手机模块
         if(true == isMobile()){
             header("Location: ".U('Mobile/Index/index'));
@@ -31,15 +30,16 @@ class Index extends Base {
         }
         
         $hot_goods = $hot_cate = $cateList = array();
+
+        // 缓存中读取：首页热卖的商品
         $sql = "select a.goods_name,a.goods_id,a.shop_price,a.market_price,a.cat_id,b.parent_id_path,b.name from ".C('database.prefix')."goods as a left join ";
         $sql .= C('database.prefix')."goods_category as b on a.cat_id=b.id where a.is_hot=1 and a.is_on_sale=1 order by a.sort";//二级分类下热卖商品       
-        $index_hot_goods = S('index_hot_goods');
         if(empty($index_hot_goods))
         {
             $index_hot_goods = Db::query($sql);//首页热卖商品
             S('index_hot_goods',$index_hot_goods,TPSHOP_CACHE_TIME);
         }
-       
+
         if($index_hot_goods){
               foreach($index_hot_goods as $val){
                   $cat_path = explode('_', $val['parent_id_path']);
@@ -67,7 +67,7 @@ class Index extends Base {
      *  公告详情页
      */
     public function notice(){
-        return $this->fetch();
+        return $this->fetch();      // 找不到该视图
     }
     
     // 二维码
@@ -207,38 +207,5 @@ class Index extends Base {
         $favourite_goods = M('goods')->where("is_recommend=1 and is_on_sale=1")->order('goods_id DESC')->page($p,$i)->cache(true,TPSHOP_CACHE_TIME)->select();//首页推荐商品
         $this->assign('favourite_goods',$favourite_goods);
         return $this->fetch();
-    }
-    
-    public function test(){
-    	header("Content-type: text/html; charset=utf-8");
-    	$tables = DB::query("show tables");
-    	$a = $b = 0;
-    	foreach($tables as $key => $val)
-    	{
-    		$tb = $val['Tables_in_tpshop2.0'];//tpshop为数据库名称
-			$fields = DB::query("show full fields from `$tb`");
-			//dump($fields);
-			foreach ($fields as $v){
-				if(strpos($v['Type'],'int') && empty($v['Extra'])){
-					if(empty($v['Default'])){
-						DB::query("alter table $tb alter column `{$v['Field']}` set default 0");
-						$a++;
-					}
-				}else{
-					if(strpos($v['Type'],'char') && empty($v['Default'])){
-						if($v['Null'] == 'YES'){
-							//可以为空不做修改
-						}else{
-							//不能为空严格模式要求设默认值
-							$sql = "ALTER TABLE `$tb` MODIFY COLUMN `{$v['Field']}` {$v['Type']} CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '".$v['Comment']."';";
-							DB::query($sql);
-							$b++;
-						}
-					}
-				}
-			}
-    	}
-    	echo $a.'<br>'.$b;
-    	exit;
     }
 }

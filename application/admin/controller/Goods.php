@@ -9,7 +9,7 @@
  * 不允许对程序代码以任何形式任何目的的再发布。
  * 采用TP5助手函数可实现单字母函数M D U等,也可db::name方式,可双向兼容
  * ============================================================================
- * Author: IT宇宙人     
+ * Author: IT宇宙人
  * Date: 2015-09-09
  */
 namespace app\admin\controller;
@@ -252,7 +252,7 @@ class Goods extends Base {
         return $this->fetch();
     }
     
-    
+
     public function stock_list(){
     	$model = M('stock_log');
     	$map = array();

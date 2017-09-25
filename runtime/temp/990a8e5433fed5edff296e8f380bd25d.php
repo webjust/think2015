@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:3:{s:37:"./template/pc/rainbow/cart\cart2.html";i:1499420874;s:45:"./template/pc/rainbow/public\sign-header.html";i:1499420874;s:46:"./template/pc/rainbow/public\footer_index.html";i:1499420874;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:3:{s:37:"./template/pc/rainbow/cart\cart2.html";i:1506310198;s:45:"./template/pc/rainbow/public\sign-header.html";i:1499420874;s:46:"./template/pc/rainbow/public\footer_index.html";i:1499420874;}*/ ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -397,6 +397,7 @@
     </div>
 </div>
 <!-- end 提示配送商品 -->
+
 <!--footer-s-->
 <div class="footer p">
     <div class="mod_service_inner">
@@ -439,7 +440,7 @@
                                 if(empty($sql_result_v))
                                 {                            
                                     $result_name = $sql_result_v = \think\Db::query("select * from `__PREFIX__article_cat` where parent_id = 2"); 
-                                    S("sql_".$md5_key,$sql_result_v,86400);
+                                    S("sql_".$md5_key,$sql_result_v,1);
                                 }    
                               foreach($sql_result_v as $k=>$v): ?>
                 <ul>
@@ -453,7 +454,7 @@
                                 if(empty($sql_result_v2))
                                 {                            
                                     $result_name = $sql_result_v2 = \think\Db::query("select * from `__PREFIX__article` where cat_id = $v[cat_id]  and is_open=1"); 
-                                    S("sql_".$md5_key,$sql_result_v2,86400);
+                                    S("sql_".$md5_key,$sql_result_v2,1);
                                 }    
                               foreach($sql_result_v2 as $k2=>$v2): ?>
                         <li>
@@ -483,7 +484,7 @@
                                 if(empty($sql_result_v))
                                 {                            
                                     $result_name = $sql_result_v = \think\Db::query("select * from `__PREFIX__article` where cat_id = 5 and is_open=1"); 
-                                    S("sql_".$md5_key,$sql_result_v,86400);
+                                    S("sql_".$md5_key,$sql_result_v,1);
                                 }    
                               foreach($sql_result_v as $k=>$v): ?>
                 <a href="<?php echo U('Home/Article/detail',array('article_id'=>$v[article_id])); ?>"><?php echo $v[title]; ?></a>
@@ -530,6 +531,7 @@
             ajax_order_price(); // 计算订单价钱
         }
     }
+
     /**
      * 新增修改收货地址
      * id 为零 则为新增, 否则是修改
@@ -549,6 +551,7 @@
             content: url,
         });
     }
+
     // 添加修改收货地址回调函数
     function call_back_fun(v) {
         layer.closeAll(); // 关闭窗口
@@ -592,6 +595,9 @@
         });
     }
 
+    /*
+     * ajax 获取当前用户的收货地址列表
+     */
     // 切换收货地址
     function swidth_address(obj) {
         var province_id = $(obj).attr('data-province-id');
@@ -604,6 +610,7 @@
         $(obj).parent().parent().parent().parent().parent().addClass('address_current');
         ajax_order_price(); // 计算订单价格
     }
+
     /**
      * 获取用户自提点和推荐自提点
      * @param type 1：用户自提点 ，0：用户自提点和推荐自提点
@@ -623,6 +630,7 @@
             }
         });
     }
+
     //更换自提点
     function replace_pickup(province_id, city_id, district_id) {
         var url = "/index.php?m=Home&c=Cart&a=replace_pickup&call_back=call_back_pickup&province_id="+province_id+"&city_id="+city_id+"&district_id="+district_id;
@@ -635,15 +643,15 @@
             content: url,
         });
     }
+
     // 添加自提点地址回调函数
     function call_back_pickup(province_id,city_id,district_id){
         layer.closeAll(); // 关闭窗口
         ajax_pickup(province_id, city_id, district_id,1);
     }
+
     // 获取订单价格
     function ajax_order_price() {
-
-
         $.ajax({
             type : "POST",
             url:"<?php echo U('Home/Cart/cart3'); ?>",//+tab,g
@@ -659,8 +667,6 @@
                         location.hrgef ="<?php echo U('Home/User/login'); ?>";
                     return false;
                 }
-                // console.log(data);
-                //$("#couponFee, #pointsFee, #order_prom_amount").css('display','none');
 
                 $("#postFee").text(data.result.postFee); // 物流费
                 $("#shipping_price").text(data.result.postFee); // 物流费

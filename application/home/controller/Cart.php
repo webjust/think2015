@@ -1,19 +1,6 @@
 <?php
-/**
- * tpshop
- * ============================================================================
- * * 版权所有 2015-2027 深圳搜豹网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.tpshop.cn
- * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和使用 .
- * 不允许对程序代码以任何形式任何目的的再发布。
- * 采用TP5助手函数可实现单字母函数M D U等,也可db::name方式,可双向兼容
- * ============================================================================
- * $Author: IT宇宙人 2015-08-10 $
- *
- */ 
- 
-namespace app\home\controller; 
+namespace app\home\controller;
+
 use app\home\logic\CartLogic;
 use app\home\logic\CartLogic2;
 use app\home\logic\OrderLogic;
@@ -23,11 +10,13 @@ use app\home\model\UserAddress;
 use app\home\logic\GoodsLogic;
 use think\Controller;
 use think\Db;
+
 class Cart extends Base {
 
     public $cartLogic; // 购物车逻辑操作类
     public $user_id = 0;
-    public $user = array();    
+    public $user = array();
+
     /**
      * 初始化函数
      */
@@ -35,6 +24,8 @@ class Cart extends Base {
     {
         parent::_initialize();
         $this->cartLogic = new CartLogic();
+
+        // 获取当前登录的用户
         if (session('?user')) {
             $user = session('user');
             $user = M('users')->where("user_id", $user['user_id'])->find();
@@ -42,6 +33,7 @@ class Cart extends Base {
             $this->user = $user;
             $this->user_id = $user['user_id'];
             $this->assign('user', $user); //存储用户信息
+
             // 给用户计算会员价 登录前后不一样
             if ($user) {
                 $user['discount'] = (empty($user['discount'])) ? 1 : $user['discount'];
@@ -54,51 +46,67 @@ class Cart extends Base {
         }
     }
 
+    /**
+     * 立即购买
+     * @return mixed
+     */
     public function cart(){
         return $this->fetch();
     }
-    
+
     public function index(){
     	return $this->fetch('cart');
     }
 
-    function ajaxAddCart(){
+    /**
+     * 产品加入购物车
+     */
+    public function ajaxAddCart(){
+        // 1. 接收POST提交过来的数据
         $goods_id = I("goods_id/d"); // 商品id
         $goods_num = I("goods_num/d");// 商品数量
         $goods_spec = I("goods_spec/a",array()); // 商品规格
+        // 2. 数据校验
         if(empty($goods_id)){
+            // 判断是否正确接收到传递过来的参数，否则返回 json 格式的信息。状态为：0
             $this->ajaxReturn(['status'=>0,'msg'=>'请选择要购买的商品','result'=>'']);
         }
         if(empty($goods_num)){
+            // 判断购买的数量
             $this->ajaxReturn(['status'=>0,'msg'=>'购买商品数量不能为0','result'=>'']);
         }
         $spec_key = array_values($goods_spec);
+        // 获取规格的ID值，排序后使用 _ 进行拼接
         if($spec_key){
             sort($spec_key);
             $goods_spec_key = implode('_', $spec_key);
         }else{
             $goods_spec_key = '';
         }
+
+        // 购物车模型
         $cartLogic = new CartLogic();
-        $cartLogic->setGoodsModel($goods_id);
-        $cartLogic->setUserId($this->user_id);
+        // 创建商品模型
+        $cartLogic->setGoodsModel($goods_id);   // 3. 根据ID，返回1个商品模型
+        $cartLogic->setUserId($this->user_id);  // 4. 设置用户ID
+
+        // 添加到购物车
         $result = $cartLogic->addGoodsToCart($goods_num,$goods_spec_key);
         $this->ajaxReturn($result);
     }
-    
+
     /**
      * ajax 删除购物车的商品
      */
     public function ajaxDelCart()
-    {       
+    {
         $ids = I("ids"); // 商品 ids        
         $result = M("Cart")->where("id", "in", $ids)->delete(); // 删除id为5的用户数据
-        $return_arr = array('status'=>1,'msg'=>'删除成功','result'=>''); // 返回结果状态       
+        $return_arr = array('status'=>1,'msg'=>'删除成功','result'=>''); // 返回结果状态
         exit(json_encode($return_arr));
     }
-    
-    
-    /*
+
+    /**
      * ajax 请求获取购物车列表
      */
     public function ajaxCartList()
@@ -108,12 +116,14 @@ class Cart extends Base {
         $goodsLogic = new GoodsLogic();
         $cartLogic = new CartLogic();
         $where['session_id'] = $this->session_id; // 默认按照 session_id 查询
+
         //如果这个用户已经登录则按照用户id查询
         if ($this->user_id) {
             unset($where);
             $where['user_id'] = $this->user_id;
         }
         $cartList = M('Cart')->where($where)->getField("id,goods_num,selected,prom_type,prom_id,goods_id,goods_price,spec_key");
+
         if ($post_goods_num) {
             // 修改购物车数量 和勾选状态
             foreach ($post_goods_num as $key => $val) {
@@ -148,19 +158,35 @@ class Cart extends Base {
             $this->assign('select_all', input('post.select_all')); // 全选框
         }
         $cartLogic->setUserId($this->user_id);
+
         $result = $cartLogic->getUserCartList(1); // 选中的商品
+
         if (empty($result['total_price'])) {
             $result['total_price'] = array('total_fee' => 0, 'cut_fee' => 0, 'num' => 0);
         }
+
+        //dump($result['cartList']);
         $this->assign('cartList', $result['cartList']); // 购物车的商品
-        $this->assign('total_price', $result['total_price']); // 总计
+        $this->assign('total_price', $result['total_price']); // 价格计算
+        //dump($result['total_price']);
         return $this->fetch('ajax_cart_list');
     }
+
     /**
      * 购物车第二步确定页面
      */
     public function cart2()
     {
+        /*
+         * 1. 判断是否登录
+         * 2. 访问业务逻辑层：设置用户ID
+         * 3. 判断当前购物车产品数量
+         * 4. 使用模型，获取当前购物车产品列表、订单金额
+         * 5. 查询物流信息列表
+         * 6. 查询该用户的优惠券信息
+         * 7. 传递给视图
+         * 8. 渲染
+         * */
         if($this->user_id == 0){
             $this->error('请先登陆',U('Home/User/login'));
         }
@@ -170,7 +196,8 @@ class Cart extends Base {
             $this->error ('你的购物车没有选中商品','Cart/cart');
         }
         $result =  $cartLogic->getUserCartList(1); // 获取购物车商品
-        $shippingList = M('Plugin')->where("`type` = 'shipping' and status = 1")->cache(true,TPSHOP_CACHE_TIME)->select();// 物流公司                
+
+        $shippingList = M('Plugin')->where("`type` = 'shipping' and status = 1")->cache(true,TPSHOP_CACHE_TIME)->select();// 物流公司
         // 找出这个用户的优惠券 没过期的  并且 订单金额达到 condition 优惠券指定标准的
         $couponWhere = [
             'c2.uid' => $this->user_id,
@@ -189,8 +216,8 @@ class Cart extends Base {
         $this->assign('total_price', $result['total_price']); // 总计                               
         return $this->fetch();
     }
-   
-    /*
+
+    /**
      * ajax 获取用户收货地址 用于购物车确认订单页面
      */
     public function ajaxAddress(){
@@ -201,8 +228,8 @@ class Cart extends Base {
         		$area_id[] = $val['province'];
                         $area_id[] = $val['city'];
                         $area_id[] = $val['district'];
-                        $area_id[] = $val['twon'];                        
-        	}    
+                        $area_id[] = $val['twon'];
+        	}
                 $area_id = array_filter($area_id);
         	$area_id = implode(',', $area_id);
         	$regionList = M('region')->where("id", "in", $area_id)->getField('id,name');
@@ -213,12 +240,14 @@ class Cart extends Base {
         if((count($address_list) > 0) && ($c == 0)) // 如果没有设置默认收货地址, 则第一条设置为默认收货地址
             $address_list[0]['is_default'] = 1;
         $this->assign('address_list', $address_list);
+        //dump($address_list);
         return $this->fetch('ajax_address');
     }
+
     /**
+     * 获取自提点信息
      * @author dyr
      * @time 2016.08.22
-     * 获取自提点信息
      */
     public function ajaxPickup()
     {
@@ -238,9 +267,9 @@ class Cart extends Base {
     }
 
     /**
+     * 更换自提点
      * @author dyr
      * @time 2016.08.22
-     * 更换自提点
      */
     public function replace_pickup()
     {
@@ -266,9 +295,9 @@ class Cart extends Base {
     }
 
     /**
+     * 更换自提点
      * @author dyr
      * @time 2016.08.22
-     * 更换自提点
      */
     public function ajax_PickupPoint()
     {
@@ -280,21 +309,30 @@ class Cart extends Base {
         exit(json_encode($pick_up_list));
     }
 
-
     /**
      * ajax 获取订单商品价格 或者提交 订单
      */
     public function cart3(){
+        /*
+         * 1. 判断用户是否已经登录
+         * 2. 获取传递过来的参数：收货地址、物流编号、发票、优惠券、积分、余额、留言、支付密码...
+         * 3. 数据校验：是否填写了必填信息：收货方式、收货地址
+         * 4. 获取用户的收货地址ID（ajax）
+         * 5. 根据提交的信息，计算价格！(封装1个计算订单最后金额的函数，根据不同的条件，返回不同的信息...)
+         * 6. 计算优惠活动后的最终价格 (满多少减多少等)
+         * 7. 提交订单(各种异常信息返回)，满足所有条件时写入数据
+         * 8. 返回信息
+         * */
         if($this->user_id == 0){
             exit(json_encode(array('status'=>-100,'msg'=>"登录超时请重新登录!",'result'=>null))); // 返回结果状态
         }
         $address_id = I("address_id/d"); //  收货地址id
-        $shipping_code =  I("shipping_code"); //  物流编号        
+        $shipping_code =  I("shipping_code"); //  物流编号
         $invoice_title = I('invoice_title'); // 发票
         $coupon_id =  I("coupon_id/d"); //  优惠券id
         $couponCode =  I("couponCode"); //  优惠券代码
         $pay_points =  I("pay_points/d",0); //  使用积分
-        $user_money =  I("user_money/f",0); //  使用余额        
+        $user_money =  I("user_money/f",0); //  使用余额
         $user_note =  I("user_note",''); // 用户留言
         $paypwd =  I("paypwd",''); // 支付密码
         $user_money = $user_money ? $user_money : 0;
@@ -306,25 +344,25 @@ class Cart extends Base {
         }
         if(!$address_id) exit(json_encode(array('status'=>-3,'msg'=>'请先填写收货人信息','result'=>null))); // 返回结果状态
         if(!$shipping_code) exit(json_encode(array('status'=>-4,'msg'=>'请选择物流信息','result'=>null))); // 返回结果状态
-		
+
 		$address = M('UserAddress')->where("address_id", $address_id)->find();
 		$order_goods = M('cart')->where(['user_id'=>$this->user_id,'selected'=>1])->select();
         $result = calculate_price($this->user_id,$order_goods,$shipping_code,0,$address['province'],$address['city'],$address['district'],$pay_points,$user_money,$coupon_id,$couponCode);
 		if($result['status'] < 0)
-			exit(json_encode($result));      	
-	// 订单满额优惠活动		                
+			exit(json_encode($result));
+	// 订单满额优惠活动
         $order_prom = get_order_promotion($result['result']['order_amount']);
         $result['result']['order_amount'] = $order_prom['order_amount'] ;
         $result['result']['order_prom_id'] = $order_prom['order_prom_id'] ;
         $result['result']['order_prom_amount'] = $order_prom['order_prom_amount'] ;
-        
+
         $car_price = array(
             'postFee'      => $result['result']['shipping_price'], // 物流费
-            'couponFee'    => $result['result']['coupon_price'], // 优惠券            
+            'couponFee'    => $result['result']['coupon_price'], // 优惠券
             'balance'      => $result['result']['user_money'], // 使用用户余额
-            'pointsFee'    => $result['result']['integral_money'], // 积分支付            
+            'pointsFee'    => $result['result']['integral_money'], // 积分支付
             'payables'     => number_format($result['result']['order_amount'], 2, '.', ''), // 应付金额
-            'goodsFee'     => $result['result']['goods_price'],// 商品价格            
+            'goodsFee'     => $result['result']['goods_price'],// 商品价格
             'order_prom_id' => $result['result']['order_prom_id'], // 订单优惠活动id
             'order_prom_amount' => $result['result']['order_prom_amount'], // 订单优惠活动优惠了多少钱
         );
@@ -347,32 +385,32 @@ class Cart extends Base {
                 }
                 $pay_name = $user_money ? '余额支付' : '积分兑换';
             }
-            
+
             if(empty($coupon_id) && !empty($couponCode))
                $coupon_id = M('CouponList')->where("code", $couponCode)->getField('id');
             $orderLogic = new OrderLogic();
             $result = $orderLogic->addOrder($this->user_id,$address_id,$shipping_code,$invoice_title,$coupon_id,$car_price,$user_note,$pay_name); // 添加订单
-            exit(json_encode($result));            
+            exit(json_encode($result));
         }
-        
+
         $return_arr = array('status'=>1,'msg'=>'计算成功','result'=>$car_price); // 返回结果状态
-        exit(json_encode($return_arr));           
-    }	
+        exit(json_encode($return_arr));
+    }
+
     /**
-     * ajax 获取订单商品价格 或者提交 订单
-	 * 已经用心方法 这个方法 cart9  准备作废
-     */
-   
-    /*
      * 订单支付页面
      */
     public function cart4(){
-
+        /*
+         * 1. 获取订单的ID
+         * 2. 查询订单信息
+         * 3. 查看订单在支付状态(1:成功、2:是否超时...)
+         * */
         $order_id = I('order_id/d');
         $order = M('Order')->where("order_id", $order_id)->find();
-        
+
         // 如果已经支付过的订单直接到订单详情页面. 不再进入支付页面
-        if($order['pay_status'] == 1){            
+        if($order['pay_status'] == 1){
             $order_detail_url = U("Home/User/order_detail",array('id'=>$order_id));
             header("Location: $order_detail_url");
             exit;
@@ -407,28 +445,30 @@ class Cart extends Base {
         }
         $paymentList = M('Plugin')->where($payment_where)->select();
         $paymentList = convert_arr_key($paymentList, 'code');
-        
+
         foreach($paymentList as $key => $val)
         {
-            $val['config_value'] = unserialize($val['config_value']);            
+            $val['config_value'] = unserialize($val['config_value']);
             if($val['config_value']['is_bank'] == 2)
             {
-                $bankCodeList[$val['code']] = unserialize($val['bank_code']);        
-            }                
-        }                
-        
-        $bank_img = include APP_PATH.'home/bank.php'; // 银行对应图片        
-        $this->assign('paymentList',$paymentList);        
+                $bankCodeList[$val['code']] = unserialize($val['bank_code']);
+            }
+        }
+
+        $bank_img = include APP_PATH.'home/bank.php'; // 银行对应图片
+        $this->assign('paymentList',$paymentList);
         $this->assign('bank_img',$bank_img);
         $this->assign('order',$order);
-        $this->assign('bankCodeList',$bankCodeList);        
+        $this->assign('bankCodeList',$bankCodeList);
         $this->assign('pay_date',date('Y-m-d', strtotime("+1 day")));
 
         return $this->fetch();
     }
- 
-    
-    //ajax 请求购物车列表
+
+    /**
+     * ajax 请求购物车列表
+     * @return mixed
+     */
     public function header_cart_list()
     {
         $cartLogic = new CartLogic();
@@ -436,11 +476,11 @@ class Cart extends Base {
     	$cart_result = $cartLogic->getUserCartList(0);
     	if(empty($cart_result['total_price']))
     		$cart_result['total_price'] = Array( 'total_fee' =>0, 'cut_fee' =>0, 'num' => 0);
-    	
+
     	$this->assign('cartList', $cart_result['cartList']); // 购物车的商品
     	$this->assign('cart_total_price', $cart_result['total_price']); // 总计
-        $template = I('template','header_cart_list');    	 
-        return $this->fetch($template);		 
+        $template = I('template','header_cart_list');
+        return $this->fetch($template);
     }
 
     /**

@@ -317,6 +317,7 @@
     </div>
 </div>
 <!-- end 提示配送商品 -->
+
 <!--footer-s-->
 <div class="footer p">
     <include file="public/footer_index" />
@@ -347,6 +348,7 @@
             ajax_order_price(); // 计算订单价钱
         }
     }
+
     /**
      * 新增修改收货地址
      * id 为零 则为新增, 否则是修改
@@ -366,6 +368,7 @@
             content: url,
         });
     }
+
     // 添加修改收货地址回调函数
     function call_back_fun(v) {
         layer.closeAll(); // 关闭窗口
@@ -409,6 +412,9 @@
         });
     }
 
+    /*
+     * ajax 获取当前用户的收货地址列表
+     */
     // 切换收货地址
     function swidth_address(obj) {
         var province_id = $(obj).attr('data-province-id');
@@ -421,6 +427,7 @@
         $(obj).parent().parent().parent().parent().parent().addClass('address_current');
         ajax_order_price(); // 计算订单价格
     }
+
     /**
      * 获取用户自提点和推荐自提点
      * @param type 1：用户自提点 ，0：用户自提点和推荐自提点
@@ -440,6 +447,7 @@
             }
         });
     }
+
     //更换自提点
     function replace_pickup(province_id, city_id, district_id) {
         var url = "/index.php?m=Home&c=Cart&a=replace_pickup&call_back=call_back_pickup&province_id="+province_id+"&city_id="+city_id+"&district_id="+district_id;
@@ -452,15 +460,15 @@
             content: url,
         });
     }
+
     // 添加自提点地址回调函数
     function call_back_pickup(province_id,city_id,district_id){
         layer.closeAll(); // 关闭窗口
         ajax_pickup(province_id, city_id, district_id,1);
     }
+
     // 获取订单价格
     function ajax_order_price() {
-
-
         $.ajax({
             type : "POST",
             url:"{:U('Home/Cart/cart3')}",//+tab,g
@@ -476,8 +484,6 @@
                         location.hrgef ="{:U('Home/User/login')}";
                     return false;
                 }
-                // console.log(data);
-                //$("#couponFee, #pointsFee, #order_prom_amount").css('display','none');
 
                 $("#postFee").text(data.result.postFee); // 物流费
                 $("#shipping_price").text(data.result.postFee); // 物流费

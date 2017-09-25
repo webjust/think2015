@@ -137,9 +137,10 @@ class Admin extends Base {
       
         if(IS_POST){
             $verify = new Verify();
-            if (!$verify->check(I('post.vertify'), "admin_login")) {
+            // 注释验证码校验
+/*            if (!$verify->check(I('post.vertify'), "admin_login")) {
             	exit(json_encode(array('status'=>0,'msg'=>'验证码错误')));
-            }
+            }*/
             $condition['user_name'] = I('post.username/s');
             $condition['password'] = I('post.password/s');
             if(!empty($condition['user_name']) && !empty($condition['password'])){

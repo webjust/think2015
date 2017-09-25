@@ -27,7 +27,7 @@ class Api extends Base {
     public function _initialize() {
         parent::_initialize();
     }
-    /*
+    /**
      * 获取地区
      */
     public function getRegion(){

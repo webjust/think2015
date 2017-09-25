@@ -27,9 +27,19 @@ class Activity extends Base
 {
     /**
      * 商品详情页
+     * @url http://tpshop.dev/home/activity/group/id/71.html
      */
     public function group()
     {
+        /*
+         * 1. 获取GET参数
+         * 2. 访问团购商品的模型层，查找商品团购信息
+         * 3. 查询结果为空，进行跳转提示
+         * 4. 查询商品详情信息、图片、属性、规格、价格、库存、评论信息
+         * 5. 更新点击量
+         * 6. 传递变量给视图
+         * */
+
         //form表单提交
         C('TOKEN_ON', true);
 
@@ -47,13 +57,18 @@ class Activity extends Base
 
         $goods_attribute = M('GoodsAttribute')->getField('attr_id,attr_name'); // 查询属性
         $goods_attr_list = M('GoodsAttr')->where("goods_id", $goods_id)->select(); // 查询商品属性表
-
         // 商品规格 价钱 库存表 找出 所有 规格项id
         $keys = M('SpecGoodsPrice')->where("goods_id", $goods_id)->getField("GROUP_CONCAT(`key` SEPARATOR '_') ");
+        // SELECT GROUP_CONCAT(`key` SEPARATOR '_') FROM `tp_spec_goods_price` WHERE `goods_id` = 71 LIMIT 1
+        //echo M('SpecGoodsPrice')->getLastSql();
         if ($keys) {
             $specImage = M('SpecImage')->where("goods_id = :goods_id and src != '' ")->bind(['goods_id' => $goods_id])->getField("spec_image_id,src");// 规格对应的 图片表， 例如颜色
+            //echo M('SpecImage')->getLastSql();
+            //SELECT `spec_image_id`,`src` FROM `tp_spec_image` WHERE ( goods_id = '49' and src != '' )
             $keys = str_replace('_', ',', $keys);
-            $sql = "SELECT a.name,a.order,b.* FROM __PREFIX__spec AS a INNER JOIN __PREFIX__spec_item AS b ON a.id = b.spec_id WHERE b.id IN($keys) ORDER BY a.order";
+            $sql = "SELECT a.name,a.order,b.* FROM tp_spec AS a INNER JOIN tp_spec_item AS b ON a.id = b.spec_id WHERE b.id IN($keys) ORDER BY a.order";
+            //echo $sql;
+            //SELECT a.name,a.order,b.* FROM tp_spec AS a INNER JOIN tp_spec_item AS b ON a.id = b.spec_id WHERE b.id IN(11,13,21) ORDER BY a.order
             $filter_spec2 = DB::query($sql);
             foreach ($filter_spec2 as $key => $val) {
                 $filter_spec[$val['name']][] = array(
@@ -82,12 +97,17 @@ class Activity extends Base
         return $this->fetch();
     }
 
-
     /**
      * 团购活动列表
+     * @url http://tpshop.dev/home/activity/group_list.html
      */
     public function group_list()
     {
+        /*
+         * 1. 查询总记录条数
+         * 2. 翻页类
+         * 3. 显示视图
+         * */
         $count = M('GroupBuy')->where(time() . " >= start_time and " . time() . " <= end_time ")->count();// 查询满足要求的总记录数
         $Page = new Page($count, 20);// 实例化分页类 传入总记录数和每页显示的记录数
         $show = $Page->show();// 分页显示输出
@@ -99,13 +119,15 @@ class Activity extends Base
 
     /**
      * 预售列表页
+     * 备注：该模型代码不存在
      */
     public function pre_sell_list()
     {
+        die('该功能被隐藏');
         $model = D('goods_activity');
         $pre_sell_list = $model->where(array('act_type' => 1, 'is_finished' => 0))->select();
         foreach ($pre_sell_list as $key => $val) {
-            $pre_sell_list[$key] = array_merge($pre_sell_list[$key]->toArray(), unserialize($pre_sell_list[$key]['ext_info']));
+            $pre_sell_list[$key] = array_merge($pre_sell_list[$key], unserialize($pre_sell_list[$key]['ext_info']));
             $pre_sell_list[$key]['act_status'] = $model->getPreStatusAttr($pre_sell_list[$key]);
             $pre_count_info = $model->getPreCountInfo($pre_sell_list[$key]['act_id'], $pre_sell_list[$key]['goods_id']);
             $pre_sell_list[$key] = array_merge($pre_sell_list[$key], $pre_count_info);
@@ -164,6 +186,10 @@ class Activity extends Base
     // 促销活动页面
     public function promoteList()
     {
+        /*
+         * 1. 使用查询构造器中的连接表查询促销产品信息
+         * 2. 传递视图
+         * */
         $goods_where['p.start_time']  = array('lt',time());
         $goods_where['p.end_time']  = array('gt',time());
         $goods_where['g.prom_type']  = 3;
@@ -177,12 +203,13 @@ class Activity extends Base
         $this->assign('goodsList',$goodsList);
         return $this->fetch();
     }
+
     /**
      * 抢购活动列表
      */
     public function flash_sale_list()
     {
-        $time_space = flash_sale_time_space();
+        $time_space = flash_sale_time_space();      // 根据当前时间获取5个段的抢购时间
         $this->assign('time_space', $time_space);
         return $this->fetch();
     }
@@ -191,6 +218,9 @@ class Activity extends Base
      */
     public function ajax_flash_sale()
     {
+        /*
+         * 1. 查询当前闪购的商品
+         * */
         $p = I('p',1);
         $start_time = I('start_time');
         $end_time = I('end_time');
@@ -232,6 +262,8 @@ class Activity extends Base
             ->where($where)
             ->limit($Page->firstRow . ',' . $Page->listRows)
             ->order($order)->select();
+        //echo M('coupon')->getLastSql();
+        //SELECT `c`.*,send_end_time-UNIX_TIMESTAMP() as spacing_time FROM `tp_coupon` `c` WHERE `type` = 2 AND `send_start_time` <= 1505674551 AND `send_end_time` >= 1505674551 ORDER BY `money` desc LIMIT 0,15
         if (is_array($coupon_list) && count($coupon_list) > 0) {
             $user = session('user');
             if ($user) {

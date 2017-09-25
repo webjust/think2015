@@ -107,7 +107,6 @@
                 return false;
             before_request = 0;
 
-
             $.ajax({
                 type : "POST",
                 url:"{:U('Home/Cart/ajaxCartList')}",//+tab,
@@ -191,6 +190,7 @@
                 var id = s_name.replace('cart_select[','').replace(']','');
                 chk_value.push(id);
             });
+
             // ajax  调用删除
             if(chk_value.length > 0)
                 ajax_del_cart(chk_value.join(','));

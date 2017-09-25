@@ -512,6 +512,7 @@ function is_qq() {
         return true;
     } return false;
 }
+
 function is_alipay() {
     if (strpos($_SERVER['HTTP_USER_AGENT'], 'AlipayClient') !== false) {
         return true;

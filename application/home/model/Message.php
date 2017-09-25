@@ -43,6 +43,7 @@ class Message extends Model
             ->count();
         return $user_system_message_no_read;
     }
+
     /**
      * 获取用户的系统消息
      * @return array

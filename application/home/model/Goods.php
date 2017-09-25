@@ -23,7 +23,12 @@ use think\Db;
  */
 class Goods extends Model
 {
-
+    /**
+     * 读取器：计算产品的折扣
+     * @param $value
+     * @param $data
+     * @return float|int
+     */
     public function getDiscountAttr($value, $data)
     {
         if ($data['market_price'] == 0) {
